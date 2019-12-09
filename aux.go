@@ -5,6 +5,7 @@ import (
   "strconv"
   "sync"
   "time"
+  "runtime"
   "github.com/gomodule/redigo/redis"
 )
 
@@ -356,4 +357,15 @@ func RedisCheck(r redis.Conn, red_sock_type, red_sock, red_db string) (redis.Con
   }
 
   return red, err
+}
+
+func GetMemUsage() string {
+  var m runtime.MemStats
+  runtime.ReadMemStats(&m)
+  // For info on each, see: https://golang.org/pkg/runtime/#MemStats
+  return fmt.Sprintf("Alloc = %v KiB\tTotalAlloc = %v KiB\tSys = %v KiB\tNumGC = %v", BToKb(m.Alloc), BToKb(m.TotalAlloc), BToKb(m.Sys), m.NumGC)
+}
+
+func BToKb(b uint64) uint64 {
+  return b / 1024
 }
