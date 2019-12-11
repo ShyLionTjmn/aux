@@ -294,6 +294,28 @@ func (m M) VA(k ... string) interface{} {
   }
 }
 
+func (m M) Copy() M {
+  ret := make(M)
+
+  for k, v := range m {
+    switch v.(type) {
+    case M:
+      ret[k] = v.(M).Copy()
+    case []string:
+      ret[k] = append([]string{}, v.([]string)...)
+    case []int64:
+      ret[k] = append([]int64{}, v.([]int64)...)
+    case []uint64:
+      ret[k] = append([]uint64{}, v.([]uint64)...)
+    case []interface{}:
+      ret[k] = append([]interface{}{}, v.([]interface{})...)
+    default:
+      ret[k] = v
+    }
+  }
+  return ret
+}
+
 func IsHexNumber(s string) bool {
   if len(s) == 0 { return false }
   for c := 0; c < len(s); c++ {
