@@ -197,6 +197,8 @@ const UINT64_ERR = UINT64_MAX
 
 const STRING_ERROR = "M.vs.error"
 
+var ERR = errors.New("Err")
+
 func (m M) Vi(k ... string) int64 {
   if len(k) == 0 { return INT64_ERR }
   if !m.e(k[0]) { return INT64_ERR }
@@ -291,6 +293,103 @@ func (m M) VA(k ... string) interface{} {
   default:
     if len(k) == 1 { return m[k[0]] }
     return nil
+  }
+}
+
+func (m M) Vie(k ... string) (int64, error) {
+  if len(k) == 0 { return 0, ERR }
+  if !m.e(k[0]) { return 0, ERR }
+
+  switch m[k[0]].(type) {
+  case M:
+    if len(k) == 1 { return 0, ERR }
+    return m[k[0]].(M).Vi(k[1:]...)
+  case int64:
+    if len(k) != 1 { return 0, ERR }
+    return m[k[0]].(int64), nil
+  case uint64:
+    if len(k) != 1 || m[k[0]].(uint64) > INT64_MAXu { return 0, ERR }
+    return int64(m[k[0]].(uint64)), nil
+  case string:
+    if len(k) != 1 { return 0, ERR }
+    ret, err := strconv.ParseInt(m[k[0]].(string), 10, 64)
+    if err != nil { return 0, ERR }
+    return ret, nil
+  default:
+    return 0, ERR
+  }
+}
+
+func (m M) Vue(k ... string) (uint64, error) {
+  if len(k) == 0 { return 0, ERR }
+  if !m.e(k[0]) { return 0, ERR }
+
+  switch m[k[0]].(type) {
+  case M:
+    if len(k) == 1 { return 0, ERR }
+    return m[k[0]].(M).Vu(k[1:]...)
+  case uint64:
+    if len(k) != 1 { return 0, ERR }
+    return m[k[0]].(uint64), nil
+  case int64:
+    if len(k) != 1 || m[k[0]].(int64) < 0 { return 0, ERR }
+    return uint64(m[k[0]].(int64)), nil
+  case string:
+    if len(k) != 1 { return 0, ERR }
+    ret, err := strconv.ParseUint(m[k[0]].(string), 10, 64)
+    if err != nil { return 0, ERR }
+    return ret, nil
+  default:
+    return 0, ERR
+  }
+}
+
+func (m M) Vse(k ... string) (string, error) {
+  if len(k) == 0 { return "", ERR }
+  if !m.e(k[0]) { return "", ERR }
+
+  switch m[k[0]].(type) {
+  case M:
+    if len(k) == 1 { return "", ERR }
+    return m[k[0]].(M).Vs(k[1:]...), nil
+  case uint64:
+    if len(k) != 1 { return "", ERR }
+    return strconv.FormatUint(m[k[0]].(uint64), 10), nil
+  case int64:
+    if len(k) != 1 { return "", ERR }
+    return strconv.FormatInt(m[k[0]].(int64), 10), nil
+  case string:
+    if len(k) != 1 { return "", ERR }
+    return m[k[0]].(string), nil
+  default:
+    return "", ERR
+  }
+}
+
+func (m M) VM(k ... string) (M, error) {
+  if len(k) == 0 { return m, nil }
+  if !m.e(k[0]) { return nil, ERR }
+
+  switch m[k[0]].(type) {
+  case M:
+    if len(k) == 1 { return m[k[0]].(M), nil }
+    return m[k[0]].(M).VM(k[1:]...)
+  default:
+    return nil, ERR
+  }
+}
+
+func (m M) VA(k ... string) (interface{}, error) {
+  if len(k) == 0 { return nil, ERR }
+  if !m.e(k[0]) { return nil, ERR }
+
+  switch m[k[0]].(type) {
+  case M:
+    if len(k) == 1 { return m[k[0]], nil }
+    return m[k[0]].(M).VA(k[1:]...)
+  default:
+    if len(k) == 1 { return m[k[0]], nil }
+    return nil, ERR
   }
 }
 
