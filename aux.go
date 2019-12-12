@@ -197,8 +197,6 @@ const UINT64_ERR = UINT64_MAX
 
 const STRING_ERROR = "M.vs.error"
 
-var ERR = errors.New("Err")
-
 func (m M) Vi(k ... string) int64 {
   if len(k) == 0 { return INT64_ERR }
   if !m.e(k[0]) { return INT64_ERR }
@@ -296,100 +294,100 @@ func (m M) VA(k ... string) interface{} {
   }
 }
 
-func (m M) Vie(k ... string) (int64, error) {
-  if len(k) == 0 { return 0, ERR }
-  if !m.e(k[0]) { return 0, ERR }
+func (m M) Vie(k ... string) (int64, bool) {
+  if len(k) == 0 { return 0, false }
+  if !m.e(k[0]) { return 0, false }
 
   switch m[k[0]].(type) {
   case M:
-    if len(k) == 1 { return 0, ERR }
-    return m[k[0]].(M).Vi(k[1:]...)
+    if len(k) == 1 { return 0, false }
+    return m[k[0]].(M).Vie(k[1:]...)
   case int64:
-    if len(k) != 1 { return 0, ERR }
-    return m[k[0]].(int64), nil
+    if len(k) != 1 { return 0, false }
+    return m[k[0]].(int64), true
   case uint64:
-    if len(k) != 1 || m[k[0]].(uint64) > INT64_MAXu { return 0, ERR }
-    return int64(m[k[0]].(uint64)), nil
+    if len(k) != 1 || m[k[0]].(uint64) > INT64_MAXu { return 0, false }
+    return int64(m[k[0]].(uint64)), true
   case string:
-    if len(k) != 1 { return 0, ERR }
+    if len(k) != 1 { return 0, false }
     ret, err := strconv.ParseInt(m[k[0]].(string), 10, 64)
-    if err != nil { return 0, ERR }
-    return ret, nil
+    if err != nil { return 0, false }
+    return ret, true
   default:
-    return 0, ERR
+    return 0, false
   }
 }
 
-func (m M) Vue(k ... string) (uint64, error) {
-  if len(k) == 0 { return 0, ERR }
-  if !m.e(k[0]) { return 0, ERR }
+func (m M) Vue(k ... string) (uint64, bool) {
+  if len(k) == 0 { return 0, false }
+  if !m.e(k[0]) { return 0, false }
 
   switch m[k[0]].(type) {
   case M:
-    if len(k) == 1 { return 0, ERR }
-    return m[k[0]].(M).Vu(k[1:]...)
+    if len(k) == 1 { return 0, false }
+    return m[k[0]].(M).Vue(k[1:]...)
   case uint64:
-    if len(k) != 1 { return 0, ERR }
-    return m[k[0]].(uint64), nil
+    if len(k) != 1 { return 0, false }
+    return m[k[0]].(uint64), true
   case int64:
-    if len(k) != 1 || m[k[0]].(int64) < 0 { return 0, ERR }
-    return uint64(m[k[0]].(int64)), nil
+    if len(k) != 1 || m[k[0]].(int64) < 0 { return 0, false }
+    return uint64(m[k[0]].(int64)), true
   case string:
-    if len(k) != 1 { return 0, ERR }
+    if len(k) != 1 { return 0, false }
     ret, err := strconv.ParseUint(m[k[0]].(string), 10, 64)
-    if err != nil { return 0, ERR }
-    return ret, nil
+    if err != nil { return 0, false }
+    return ret, true
   default:
-    return 0, ERR
+    return 0, false
   }
 }
 
-func (m M) Vse(k ... string) (string, error) {
-  if len(k) == 0 { return "", ERR }
-  if !m.e(k[0]) { return "", ERR }
+func (m M) Vse(k ... string) (string, bool) {
+  if len(k) == 0 { return "", false }
+  if !m.e(k[0]) { return "", false }
 
   switch m[k[0]].(type) {
   case M:
-    if len(k) == 1 { return "", ERR }
-    return m[k[0]].(M).Vs(k[1:]...), nil
+    if len(k) == 1 { return "", false }
+    return m[k[0]].(M).Vse(k[1:]...)
   case uint64:
-    if len(k) != 1 { return "", ERR }
-    return strconv.FormatUint(m[k[0]].(uint64), 10), nil
+    if len(k) != 1 { return "", false }
+    return strconv.FormatUint(m[k[0]].(uint64), 10), true
   case int64:
-    if len(k) != 1 { return "", ERR }
-    return strconv.FormatInt(m[k[0]].(int64), 10), nil
+    if len(k) != 1 { return "", false }
+    return strconv.FormatInt(m[k[0]].(int64), 10), true
   case string:
-    if len(k) != 1 { return "", ERR }
-    return m[k[0]].(string), nil
+    if len(k) != 1 { return "", false }
+    return m[k[0]].(string), true
   default:
-    return "", ERR
+    return "", false
   }
 }
 
-func (m M) VM(k ... string) (M, error) {
-  if len(k) == 0 { return m, nil }
-  if !m.e(k[0]) { return nil, ERR }
+func (m M) VMe(k ... string) (M, bool) {
+  if len(k) == 0 { return m, true }
+  if !m.e(k[0]) { return nil, false }
 
   switch m[k[0]].(type) {
   case M:
-    if len(k) == 1 { return m[k[0]].(M), nil }
-    return m[k[0]].(M).VM(k[1:]...)
+    if len(k) == 1 { return m[k[0]].(M), true }
+    return m[k[0]].(M).VMe(k[1:]...)
   default:
-    return nil, ERR
+    return nil, false
   }
 }
 
-func (m M) VA(k ... string) (interface{}, error) {
-  if len(k) == 0 { return nil, ERR }
-  if !m.e(k[0]) { return nil, ERR }
+func (m M) VAe(k ... string) (interface{}, bool) {
+  if len(k) == 0 { return nil, false }
+  if !m.e(k[0]) { return nil, false }
 
   switch m[k[0]].(type) {
   case M:
-    if len(k) == 1 { return m[k[0]], nil }
-    return m[k[0]].(M).VA(k[1:]...)
+    if len(k) == 1 { return m[k[0]], true }
+    return m[k[0]].(M).VAe(k[1:]...)
   default:
-    if len(k) == 1 { return m[k[0]], nil }
-    return nil, ERR
+    if len(k) == 1 { return m[k[0]], true }
+    return nil, false
   }
 }
 
