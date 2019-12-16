@@ -489,3 +489,8 @@ func GetMemUsage() string {
 func BToKb(b uint64) uint64 {
   return b / 1024
 }
+
+func IndexOf(a []string, k string) int64 {
+  for i := 0; i < len(a); i++ { if a[i] == k { return i } }
+  return -1
+}
