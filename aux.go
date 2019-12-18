@@ -7,6 +7,7 @@ import (
   "time"
   "runtime"
   "fmt"
+  "errors"
   "github.com/gomodule/redigo/redis"
 )
 
@@ -494,4 +495,20 @@ func IndexOf(a []string, k string) int64 {
   var i int64
   for i = 0; i < int64(len(a)); i++ { if a[i] == k { return i } }
   return -1
+}
+
+func StrSepIntErr(s string, sep string) (string, int64, error) {
+  a := strings.Split(s, sep)
+  if len(a) != 2 { return "", 0 , errors.New("no separator") }
+  i, err := strconv.ParseInt(a[1], 10, 64)
+  if err != nil { return "", 0 , err }
+  return a[0], i, nil
+}
+
+func IntSepStrErr(s string, sep string) (int64, string, error) {
+  a := strings.Split(s, sep)
+  if len(a) != 2 { return 0, "", errors.New("no separator") }
+  i, err := strconv.ParseInt(a[0], 10, 64)
+  if err != nil { return 0, "", err }
+  return i, a[1], nil
 }
