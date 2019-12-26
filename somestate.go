@@ -18,7 +18,8 @@ func NewSomeState(name string) *someState {
   return &someState{mutex: &sync.Mutex{}, name: name}
 }
 
-func (s someState) State(ok bool, err error) {
+func (s *someState) State(ok bool, err error) {
+
   s.mutex.Lock()
   defer s.mutex.Unlock()
   if ok {
@@ -28,10 +29,11 @@ func (s someState) State(ok bool, err error) {
     }
   } else {
     if s.good.After(s.bad) || s.good.Equal(s.bad) {
+
       s.bad = time.Now()
       fmt.Fprint(os.Stderr, s.name, "is down")
       if err != nil {
-        fmt.Fprint(os.Stderr, ":", err)
+        fmt.Fprint(os.Stderr, " : ", err)
       }
      fmt.Fprintln(os.Stderr)
     }
