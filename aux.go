@@ -497,6 +497,14 @@ func IndexOf(a []string, k string) int64 {
   return -1
 }
 
+func StrAppendOnce(a []string, s string) []string {
+  if IndexOf(a, s) < 0 {
+    return append(a, s)
+  } else {
+    return a
+  }
+}
+
 func StrSepIntErr(s string, sep string) (string, int64, error) {
   a := strings.Split(s, sep)
   if len(a) != 2 { return "", 0 , errors.New("no separator") }
